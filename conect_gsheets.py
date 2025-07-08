@@ -8,7 +8,9 @@ scope = [
 ]
 
 # Cargamos las credenciales desde el archivo JSON
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+creds_dict = st.secrets["google"]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(dict(creds_dict), scope)
+
 
 # Autenticamos y abrimos la hoja de cálculo
 client = gspread.authorize(creds)
