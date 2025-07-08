@@ -1,5 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import streamlit as st
 
 # Definimos el alcance (scopes) que necesitamos
 scope = [
