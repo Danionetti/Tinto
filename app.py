@@ -3,8 +3,12 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import bcrypt
 import json
+import cloudinary
+import cloudinary.uploader
+from PIL import Image
+import io
 
-# Configurar acceso a Google Sheets
+# Config Google Sheets
 scope = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive",
@@ -26,11 +30,21 @@ def get_credentials():
 
 creds = get_credentials()
 client = gspread.authorize(creds)
-sheet = client.open("Tintos-lovers").worksheet("usuarios")
+sheet_users = client.open("Tintos-lovers").worksheet("usuarios")
+sheet_lugares = client.open("Tintos-lovers").worksheet("Bares")
+
+# Config Cloudinary
+cloudinary.config(
+    cloud_name=st.secrets["cloudinary"]["cloud_name"],
+    api_key=st.secrets["cloudinary"]["api_key"],
+    api_secret=st.secrets["cloudinary"]["api_secret"],
+    secure=True,
+)
 
 
+# Funciones de usuarios
 def crear_usuario(username, password):
-    usuarios = sheet.get_all_records()
+    usuarios = sheet_users.get_all_records()
     for usuario in usuarios:
         if usuario["username"] == username:
             st.warning(f"El usuario '{username}' ya existe.")
@@ -38,13 +52,13 @@ def crear_usuario(username, password):
     password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode(
         "utf-8"
     )
-    sheet.append_row([username, password_hash])
+    sheet_users.append_row([username, password_hash])
     st.success(f"Usuario '{username}' creado con éxito.")
     return True
 
 
 def verificar_usuario(username, password):
-    usuarios = sheet.get_all_records()
+    usuarios = sheet_users.get_all_records()
     for usuario in usuarios:
         if usuario["username"] == username:
             password_hash = usuario["password_hash"].encode("utf-8")
@@ -53,15 +67,15 @@ def verificar_usuario(username, password):
     return False
 
 
-# Inicializar variables de sesión
+# Estado sesión
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "user" not in st.session_state:
     st.session_state["user"] = ""
 
+# App
 st.title("Tintos Lovers 🍷")
 
-# Registrarse o loguearse
 mode = st.radio("Selecciona una opción", ("Login", "Registro"))
 
 if not st.session_state["logged_in"]:
@@ -92,7 +106,40 @@ else:
     if st.button("Cerrar sesión"):
         st.session_state["logged_in"] = False
         st.session_state["user"] = ""
-        st.experimental_rerun()
+        st.rerun()
 
-    # App
-    st.write("Este es el contenido exclusivo para usuarios logueados.")
+    # Formulario para subir lugar
+    st.header("¿Dónde te has tomado el ultimo tinto?🍷")
+    with st.form("form_lugar"):
+        nombre = st.text_input("Descripción del lugar")
+        precio = st.number_input("Precio (€)", min_value=0.0, step=0.1)
+        ubicacion = st.text_input("Ubicación")
+        foto = st.file_uploader("Sube una foto", type=["jpg", "jpeg", "png"])
+
+        submitted = st.form_submit_button("Guardar lugar")
+
+        if submitted:
+            if not nombre or not ubicacion or not foto:
+                st.error("Por favor, rellena todos los campos y sube una foto.")
+            else:
+                # Subir imagen a Cloudinary
+                image_bytes = foto.read()
+                resultado = cloudinary.uploader.upload(
+                    image_bytes, folder="tintos_lovers"
+                )
+                url_imagen = resultado["secure_url"]
+
+                # Guardar en Google Sheets: nombre, precio, ubicación, url_imagen
+                sheet_lugares.append_row([nombre, precio, ubicacion, url_imagen])
+
+                st.success(f"Lugar '{nombre}' guardado con éxito.")
+                st.image(url_imagen, caption=nombre)
+
+    # Mostrar lugares guardados
+    st.header("Lugares subidos")
+    lugares = sheet_lugares.get_all_records()
+    for lugar in lugares:
+        st.subheader(lugar["nombre"])
+        st.write(f"Precio: €{lugar['precio']}")
+        st.write(f"Ubicación: {lugar['ubicacion']}")
+        st.image(lugar["url_imagen"])
