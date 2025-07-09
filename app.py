@@ -10,40 +10,22 @@ import cloudinary.uploader
 st.markdown(
     """
 <style>
-    /* Fondo general de la app */
     .stApp {
         background: linear-gradient(135deg, #722F37, #8B0000, #A0522D);
         min-height: 100vh;
     }
-    
-    /* Ocultar elementos por defecto de Streamlit */
-    .stAppDeployButton {
+
+    .stAppDeployButton, .stDecoration, .stRadio, .stSelectbox {
         display: none !important;
     }
-    
-    .stDecoration {
-        display: none !important;
-    }
-    
-    /* Ocultar la barra blanca de radio buttons */
-    .stRadio {
-        display: none !important;
-    }
-    
-    /* Ocultar cualquier elemento innecesario */
-    .stSelectbox {
-        display: none !important;
-    }
-    
-    /* Contenedor principal */
+
     .main-container {
         max-width: 400px;
         margin: 0 auto;
         padding: 2rem;
         text-align: center;
     }
-    
-    /* Título principal */
+
     .title {
         font-size: 2.5rem;
         font-weight: bold;
@@ -52,11 +34,8 @@ st.markdown(
         font-family: 'Cursive', serif;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     }
-    
-    /* Botones principales */
-    .instagram-button {
-        background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
-        color: white;
+
+    .instagram-button, .login-button {
         padding: 12px 24px;
         border: none;
         border-radius: 25px;
@@ -68,33 +47,27 @@ st.markdown(
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    
+
+    .instagram-button {
+        background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+        color: white;
+    }
+
     .instagram-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
-    
+
     .login-button {
         background: linear-gradient(45deg, #8B0000, #DC143C);
         color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 25px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        width: 100%;
-        margin: 8px 0;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    
+
     .login-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
-    
-    /* Contenedor de formularios */
+
     .form-container {
         background: rgba(255, 255, 255, 0.95);
         padding: 2rem;
@@ -103,8 +76,7 @@ st.markdown(
         margin-top: 2rem;
         backdrop-filter: blur(10px);
     }
-    
-    /* Inputs de texto */
+
     .stTextInput > div > div > input {
         border-radius: 10px;
         border: 2px solid #E1E1E1;
@@ -113,25 +85,23 @@ st.markdown(
         background: white;
         color: #333333;
     }
-    
+
     .stTextInput > div > div > input:focus {
         border-color: #8B0000;
         box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.2);
     }
-    
-    /* Emoji de vino */
+
     .wine-emoji {
         font-size: 3rem;
         margin-bottom: 1rem;
     }
-    
-    /* Texto general de la app */
-    .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+
+    .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3,
+    .stApp h1, .stApp h2, .stApp h3 {
         color: #FFFFFF !important;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
-    
-    /* Botones de Streamlit */
+
     .stButton > button {
         background: linear-gradient(45deg, #FFFFFF, #F0F0F0);
         color: #8B0000;
@@ -142,56 +112,30 @@ st.markdown(
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    
+
     .stButton > button:hover {
         background: linear-gradient(45deg, #8B0000, #DC143C);
         color: white;
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
-    
-    /* Labels de inputs */
+
     .stTextInput > label, .stNumberInput > label, .stFileUploader > label {
         color: #FFFFFF !important;
         font-weight: 600;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
     }
-    
-    /* Mensajes de éxito */
-    .stSuccess {
-        background: rgba(40, 167, 69, 0.9);
+
+    .stSuccess, .stError, .stWarning, .stInfo {
+        border-radius: 10px;
         color: white;
-        border-radius: 10px;
     }
-    
-    /* Mensajes de error */
-    .stError {
-        background: rgba(220, 53, 69, 0.9);
-        color: white;
-        border-radius: 10px;
-    }
-    
-    /* Mensajes de warning */
-    .stWarning {
-        background: rgba(255, 193, 7, 0.9);
-        color: #333333;
-        border-radius: 10px;
-    }
-    
-    /* Mensajes de info */
-    .stInfo {
-        background: rgba(23, 162, 184, 0.9);
-        color: white;
-        border-radius: 10px;
-    }
-    
-    /* Headers después del login */
-    .stApp h1, .stApp h2, .stApp h3 {
-        color: #FFFFFF !important;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
-    
-    /* Formularios después del login */
+
+    .stSuccess { background: rgba(40, 167, 69, 0.9); }
+    .stError { background: rgba(220, 53, 69, 0.9); }
+    .stWarning { background: rgba(255, 193, 7, 0.9); color: #333333; }
+    .stInfo { background: rgba(23, 162, 184, 0.9); }
+
     .stForm {
         background: rgba(255, 255, 255, 0.1);
         padding: 2rem;
@@ -199,15 +143,13 @@ st.markdown(
         backdrop-filter: blur(10px);
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
-    
-    /* File uploader */
+
     .stFileUploader {
         background: rgba(255, 255, 255, 0.1);
         border-radius: 10px;
         padding: 1rem;
     }
-    
-    /* Menú de navegación */
+
     .nav-menu {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
@@ -216,14 +158,14 @@ st.markdown(
         margin-bottom: 2rem;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-    
+
     .nav-buttons {
         display: flex;
         gap: 1rem;
         justify-content: center;
         flex-wrap: wrap;
     }
-    
+
     .nav-button {
         background: rgba(255, 255, 255, 0.9);
         color: #8B0000;
@@ -235,37 +177,45 @@ st.markdown(
         cursor: pointer;
         font-size: 14px;
     }
-    
-    .nav-button:hover {
+
+    .nav-button:hover, .nav-button.active {
         background: #8B0000;
         color: white;
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-    
-    .nav-button.active {
-        background: #8B0000;
-        color: white;
+
+    .card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 15px;
+        margin-bottom: 2rem;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-    
-    .card h3 {
-        color: #8B0000 !important;
-        text-shadow: none !important;
-    }
-    
-    .card p {
-        color: #333333 !important;
-        text-shadow: none !important;
-    }
-    
+
     .card img {
-        border-radius: 10px;
+        border-radius: 15px;
         width: 100%;
-        height: 200px;
-        object-fit: cover;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .card-overlay {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 1rem;
+        border-radius: 0 0 15px 15px;
+    }
+
+    .card-overlay h3, .card-overlay p {
+        color: white !important;
+        margin: 0.5rem 0;
     }
 </style>
+
 """,
     unsafe_allow_html=True,
 )
@@ -489,7 +439,7 @@ else:
                     f"""
                     <div class="card">
                         <img src="{lugar['url_imagen']}" alt="{lugar['nombre']}">
-                        <div class="card-info">
+                        <div class="card-overlay">
                             <h3>{lugar['nombre']}</h3>
                             <p>🍹 Precio: €{lugar['precio']}</p>
                             <p>📍 Ubicación: {lugar['ubicacion']}</p>
